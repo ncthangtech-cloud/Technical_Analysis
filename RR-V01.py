@@ -271,11 +271,11 @@ def answer_question_with_context(question: str, vector_store: FAISSVectorStore, 
 # Streamlit UI
 # -----------------------------
 
-st.set_page_config(page_title="Reliability Analysis", layout="wide")
+st.set_page_config(page_title="M&E Analysis", layout="wide")
 st.image("vna.png", width=200)
-st.title("Reliability Analysis")
+st.title("M&E Analysis")
 st.markdown(
-    "click `Process Files` to extract chunks & embeddings, then ask questions about the documents."
+    "click `Process folder, then ask questions about the documents."
 )
 
 folder_path = os.path.join(os.path.dirname(__file__), "data")
@@ -310,7 +310,7 @@ if st.button("Process folder"):
                 mtime = os.path.getmtime(file_path)
                 already_processed = faiss_store and (file_path in faiss_store.processed_files and faiss_store.processed_files[file_path] == mtime)
                 if already_processed:
-                    st.write(f"Skipping already processed: {os.path.basename(file_path)}")
+                    #st.write(f"Skipping already processed: {os.path.basename(file_path)}")
                     continue
 
                 st.write(f"Processing new/updated file: {os.path.basename(file_path)}")
