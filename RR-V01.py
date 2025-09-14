@@ -363,25 +363,25 @@ if st.button("Process data"):
 if st.session_state.vector_store is not None:
     st.subheader("Ask a question")
     question = st.text_area("Your question about the Reliability", height=120)
-    if st.button("Get Answer") and question.strip():
-        
-        with st.spinner("Retrieving relevant sections and asking the model..."):
-             answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
-        if answer:
-            # Save to history
-            st.session_state.history.append({"q": question, "a": answer})
-            st.success(answer)
-        else:
-            st.error("No answer could be generated.")
-        if st.session_state.history:
-            st.subheader("Conversation History")
-            for i, item in enumerate(st.session_state.history, 1):
-                st.markdown(f"**Q{i}:** {item['q']}")
-                st.markdown(f"**A{i}:** {item['a']}")
-                st.markdown("---")
-        if answer:
-            st.subheader("Answer")
-            st.write(answer)
+    if st.button("Get Answer"):
+        if question.strip():
+            with st.spinner("Retrieving relevant sections and asking the model..."):
+            answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
+            if answer:
+                # Save to history
+                st.session_state.history.append({"q": question, "a": answer})
+                st.success(answer)
+            else:
+                st.error("No answer could be generated.")
+    if st.session_state.history:
+        st.subheader("Conversation History")
+        for i, item in enumerate(st.session_state.history, 1):
+            st.markdown(f"**Q{i}:** {item['q']}")
+            st.markdown(f"**A{i}:** {item['a']}")
+            st.markdown("---")
+        #if answer:
+        #    st.subheader("Answer")
+        #    st.write(answer)
 
             #st.subheader("Retrieved sections (debug)")
             #for i, (txt, score) in enumerate(retrieved):
