@@ -312,7 +312,7 @@ if st.session_state.authenticated:
     st.image("vna.png", width=200)
     st.title("M&E Analysis")
     st.markdown(
-        "This App allows you to analyse technical data of VNA fleet based on available data using OpenAI. Click "Process data" first, then ask questions."
+        "This App allows you to analyse technical data of VNA fleet based on available data using OpenAI. Click 'Process data' first, then ask questions."
     )
     
     folder_path = os.path.join(os.path.dirname(__file__), "data")
