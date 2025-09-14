@@ -24,7 +24,7 @@ from typing import List, Tuple
 
 import streamlit as st
 import numpy as np
-from sklearn.metrics.pairwise import cosine_similarity
+#from sklearn.metrics.pairwise import cosine_similarity
 from PyPDF2 import PdfReader
 from openai import OpenAI
 from pptx import Presentation  # NEW import
