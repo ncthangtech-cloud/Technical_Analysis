@@ -275,10 +275,10 @@ st.set_page_config(page_title="Reliability Analysis", layout="wide")
 st.image("vna.png", width=200)
 st.title("Reliability Analysis")
 st.markdown(
-    "Put files *pdf, *pptx in the Reliability Report folder, click `Process Files` to extract chunks & embeddings, then ask questions about the documents."
+    "click `Process Files` to extract chunks & embeddings, then ask questions about the documents."
 )
 
-folder_path = st.text_input("Enter folder path containing files", "./documents")
+folder_path = os.path.join(os.path.dirname(__file__), "data")
 
 chunk_size = st.sidebar.number_input("Chunk size (chars)", min_value=200, max_value=10000, value=5000, step=100)
 chunk_overlap = st.sidebar.number_input("Chunk overlap (chars)", min_value=0, max_value=2000, value=500, step=50)
