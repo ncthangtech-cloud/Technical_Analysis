@@ -395,8 +395,11 @@ if st.session_state.history:
 # Clear history button
 if st.button("Clear History"):
     st.session_state.history = []
-    st.experimental_rerun()
-
+    st.session_state.cleared = True  # flag for one rerun
+# Show success message only once
+if st.session_state.get("cleared", False):
+    st.success("Conversation history cleared.")
+    st.session_state.cleared = False
 
 st.markdown("---")
 st.write("This is test program. Feedback is very much appreciated!")
