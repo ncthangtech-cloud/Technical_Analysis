@@ -294,7 +294,7 @@ if st.session_state.authenticated:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
                 ],
-                max_tokens=300,  # hard cap on answer length
+                max_tokens=200,  # hard cap on answer length
                 temperature=0.3
             )
     
@@ -312,7 +312,7 @@ if st.session_state.authenticated:
     st.image("vna.png", width=200)
     st.title("M&E Analysis")
     st.markdown(
-        "click Process data, then ask questions about the documents."
+        "This App allows you to analyse technical data of VNA fleet based on available data using OpenAI. Click "Process data" first, then ask questions."
     )
     
     folder_path = os.path.join(os.path.dirname(__file__), "data")
@@ -437,4 +437,4 @@ if st.session_state.authenticated:
         st.session_state.cleared = False
     
     st.markdown("---")
-    st.write("This is test program. Feedback is very much appreciated!")
+    st.write("This is test version by Thang Nguyen. Feedback is very much appreciated!")
