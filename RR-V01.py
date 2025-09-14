@@ -44,6 +44,41 @@ client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 CACHE_PATH = "embeddings_store.pkl"
 
+# ---- LOGIN SETUP ----
+USER_CREDENTIALS = st.secrets["users"]  # Read from secrets.toml
+
+# Initialize login state
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "username" not in st.session_state:
+    st.session_state.username = ""
+
+# Login form (only show if not logged in)
+if not st.session_state.authenticated:
+    st.subheader("🔐 Please log in to access the app")
+
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submit = st.form_submit_button("Login")
+
+        if submit:
+            if username in USER_CREDENTIALS and USER_CREDENTIALS[username] == password:
+                st.session_state.authenticated = True
+                st.session_state.username = username
+                st.success(f"Welcome, {username}!")
+                st.experimental_rerun()  # refresh UI
+            else:
+                st.error("Invalid username or password")
+
+# Show main app if logged in
+if st.session_state.authenticated:
+    st.sidebar.success(f"Logged in as {st.session_state.username}")
+    if st.sidebar.button("Logout"):
+        st.session_state.authenticated = False
+        st.session_state.username = ""
+        st.experimental_rerun()
+
 def load_cache():
     if os.path.exists(CACHE_PATH):
         with open(CACHE_PATH, "rb") as f:
