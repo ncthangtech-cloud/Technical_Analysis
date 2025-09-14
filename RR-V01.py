@@ -280,9 +280,12 @@ st.markdown(
 
 folder_path = os.path.join(os.path.dirname(__file__), "data")
 
-chunk_size = st.sidebar.number_input("Chunk size (chars)", min_value=200, max_value=10000, value=5000, step=100)
-chunk_overlap = st.sidebar.number_input("Chunk overlap (chars)", min_value=0, max_value=2000, value=500, step=50)
-top_k = st.sidebar.slider("Top K retrieved chunks", min_value=1, max_value=10, value=4)
+#chunk_size = st.sidebar.number_input("Chunk size (chars)", min_value=200, max_value=10000, value=5000, step=100)
+#chunk_overlap = st.sidebar.number_input("Chunk overlap (chars)", min_value=0, max_value=2000, value=500, step=50)
+#top_k = st.sidebar.slider("Top K retrieved chunks", min_value=1, max_value=10, value=4)
+chunk_size = 5000
+chunk_overlap = 500
+top_k = 4
 
 if 'vector_store' not in st.session_state:
     st.session_state.vector_store = None
