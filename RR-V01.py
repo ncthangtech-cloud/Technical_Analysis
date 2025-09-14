@@ -366,7 +366,7 @@ if st.session_state.vector_store is not None:
     if st.button("Get Answer"):
         if question.strip():
             with st.spinner("Retrieving relevant sections and asking the model..."):
-            answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
+                answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
             if answer:
                 # Save to history
                 st.session_state.history.append({"q": question, "a": answer})
