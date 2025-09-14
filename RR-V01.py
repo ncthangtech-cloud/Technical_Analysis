@@ -395,7 +395,7 @@ if st.session_state.history:
 # Clear history button
 if st.button("Clear History"):
     st.session_state.history = []
-    st.success("Conversation history cleared.")
+    st.experimental_rerun()
 
 
 st.markdown("---")
