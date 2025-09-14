@@ -1,11 +1,11 @@
 """
-Streamlit PDF Question-Answering App (OpenAI >= 1.0.0 API)
+Streamlit PDF, pptx Question-Answering App (OpenAI >= 1.0.0 API)
 
 Features:
-1) Read multiple local PDF files (uploaded via Streamlit)
+1) Read multiple PDF, pptx files (uploaded via Streamlit)
 2) Chunk the text with overlap
 3) Create embeddings using OpenAI Embeddings API
-4) Use a simple in-memory vector store (numpy + sklearn) to retrieve relevant chunks
+4) Use a FAISS to retrieve relevant chunks
 5) Ask OpenAI ChatCompletion to answer user's question using retrieved context
 
 Requirements:
@@ -270,6 +270,8 @@ def answer_question_with_context(question: str, vector_store: FAISSVectorStore, 
 # -----------------------------
 # Streamlit UI
 # -----------------------------
+if "history" not in st.session_state:
+    st.session_state.history = []  # list of {"q": question, "a": answer}
 
 st.set_page_config(page_title="M&E Analysis", layout="wide")
 st.image("vna.png", width=200)
@@ -362,19 +364,21 @@ if st.session_state.vector_store is not None:
     st.subheader("Ask a question")
     question = st.text_area("Your question about the Reliability", height=120)
     if st.button("Get Answer") and question.strip():
+        
         with st.spinner("Retrieving relevant sections and asking the model..."):
-            try:
-                answer, retrieved = answer_question_with_context(
-                    question,
-                    st.session_state.vector_store,
-                    st.session_state.chunks,
-                    top_k=top_k,
-                )
-            except Exception as e:
-                st.error(f"Error while answering: {e}")
-                answer = None
-                retrieved = []
-
+             answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
+        if answer:
+            # Save to history
+            st.session_state.history.append({"q": question, "a": answer})
+            st.success(answer)
+        else:
+            st.error("No answer could be generated.")
+        if st.session_state.history:
+            st.subheader("Conversation History")
+            for i, item in enumerate(st.session_state.history, 1):
+                st.markdown(f"**Q{i}:** {item['q']}")
+                st.markdown(f"**A{i}:** {item['a']}")
+                st.markdown("---")
         if answer:
             st.subheader("Answer")
             st.write(answer)
