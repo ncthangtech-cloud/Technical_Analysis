@@ -247,9 +247,9 @@ def answer_question_with_context(question: str, vector_store, chunks, top_k: int
         # Concise system prompt
         system_prompt = (
             "You are a helpful assistant. "
-            "Answer the user's question clearly and concisely (max 150 words). "
+            "Answer the user's question clearly and as concisely as possible (max 300 words). "
             "Only use the provided context. "
-            "If the answer is not in the context, say 'I don't know'."
+            "If the answer is not in the context, say 'I don't know, can you please write your question more specifically'."
         )
 
         # Call OpenAI API
