@@ -233,40 +233,41 @@ class FAISSVectorStore:
 # Answer generation using retrieved context
 # -----------------------------
 
-def build_prompt(question: str, retrieved_chunks: List[Tuple[str, float]]) -> str:
-    context_parts = []
-    for txt, score in retrieved_chunks:
-        context_parts.append(f"(score: {score:.4f})\n{txt}\n---")
+def answer_question_with_context(question: str, vector_store, chunks, top_k: int = 3):
+    """Retrieve top_k chunks, build a prompt, and get a concise answer."""
+    try:
+        # Embed the question
+        q_emb = get_embeddings([question])[0]
 
-    context = "\n".join(context_parts)
+        # Retrieve top_k most relevant chunks
+        results = vector_store.query(q_emb, top_k=top_k)
+        retrieved_chunks = [chunks[idx] for idx, _ in results]
+        context = "\n\n".join(retrieved_chunks)
 
-    prompt = (
-        "You are a helpful assistant. Use the following extracted sections from documents to answer the user's question. "
-        "Answer the question concisely in less than 300 words. "
-        "When the documents don't contain the answer, say you don't know and do not make up facts. "
-        "Cite the sections by including short excerpts where relevant.\n\n"
-        f"Document sections:\n{context}\n\nUser question: {question}\n\nAnswer:" 
-    )
-    return prompt
+        # Concise system prompt
+        system_prompt = (
+            "You are a helpful assistant. "
+            "Answer the user's question clearly and concisely (max 150 words). "
+            "Only use the provided context. "
+            "If the answer is not in the context, say 'I don't know'."
+        )
 
+        # Call OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # or gpt-4o if available
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
+            ],
+            max_tokens=300,  # hard cap on answer length
+            temperature=0.3
+        )
 
-def answer_question_with_context(question: str, vector_store: FAISSVectorStore, original_chunks: List[str], top_k: int = 5) -> str:
-    q_emb = get_embeddings([question])[0]
-    hits = vector_store.query(q_emb, top_k=top_k)
+        return response.choices[0].message.content.strip()
 
-    retrieved = [(original_chunks[i], score) for i, score in hits]
-    prompt = build_prompt(question, retrieved)
-
-    resp = client.chat.completions.create(
-        model=CHAT_MODEL,
-        messages=[
-            {"role": "system", "content": "You are a concise and factual assistant that bases answers only on provided context."},
-            {"role": "user", "content": prompt},
-        ],
-        max_tokens=300,
-    )
-    answer = resp.choices[0].message.content.strip()
-    return answer, retrieved
+    except Exception as e:
+        st.error(f"Error while answering: {e}")
+        return None
 
 # -----------------------------
 # Streamlit UI
@@ -369,42 +370,6 @@ if "history" not in st.session_state:
 st.subheader("Ask a Question")
 
 question = st.text_input("Enter your question about the documents:")
-
-def answer_question_with_context(question: str, vector_store, chunks, top_k: int = 3):
-    """Retrieve top_k chunks, build a prompt, and get a concise answer."""
-    try:
-        # Embed the question
-        q_emb = get_embeddings([question])[0]
-
-        # Retrieve top_k most relevant chunks
-        results = vector_store.query(q_emb, top_k=top_k)
-        retrieved_chunks = [chunks[idx] for idx, _ in results]
-        context = "\n\n".join(retrieved_chunks)
-
-        # Concise system prompt
-        system_prompt = (
-            "You are a helpful assistant. "
-            "Answer the user's question clearly and concisely (max 150 words). "
-            "Only use the provided context. "
-            "If the answer is not in the context, say 'I don't know'."
-        )
-
-        # Call OpenAI API
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",  # or gpt-4o if available
-            messages=[
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
-            ],
-            max_tokens=300,  # hard cap on answer length
-            temperature=0.3
-        )
-
-        return response.choices[0].message.content.strip()
-
-    except Exception as e:
-        st.error(f"Error while answering: {e}")
-        return None
 
 # Ask button
 if st.button("Get Answer"):
