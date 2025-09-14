@@ -242,6 +242,7 @@ def build_prompt(question: str, retrieved_chunks: List[Tuple[str, float]]) -> st
 
     prompt = (
         "You are a helpful assistant. Use the following extracted sections from documents to answer the user's question. "
+        "Answer the question concisely in less than 300 words. "
         "When the documents don't contain the answer, say you don't know and do not make up facts. "
         "Cite the sections by including short excerpts where relevant.\n\n"
         f"Document sections:\n{context}\n\nUser question: {question}\n\nAnswer:" 
@@ -262,7 +263,7 @@ def answer_question_with_context(question: str, vector_store: FAISSVectorStore, 
             {"role": "system", "content": "You are a concise and factual assistant that bases answers only on provided context."},
             {"role": "user", "content": prompt},
         ],
-        max_tokens=400,
+        max_tokens=300,
     )
     answer = resp.choices[0].message.content.strip()
     return answer, retrieved
