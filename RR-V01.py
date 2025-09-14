@@ -271,8 +271,6 @@ def answer_question_with_context(question: str, vector_store: FAISSVectorStore, 
 # -----------------------------
 # Streamlit UI
 # -----------------------------
-if "history" not in st.session_state:
-    st.session_state.history = []  # list of {"q": question, "a": answer}
 
 st.set_page_config(page_title="M&E Analysis", layout="wide")
 st.image("vna.png", width=200)
@@ -360,34 +358,80 @@ if st.button("Process data"):
             else:
                 st.warning("No new chunks were processed and no existing index found.")
 
-# --- Q&A section ---
-if st.session_state.vector_store is not None:
-    st.subheader("Ask a question")
-    question = st.text_area("Your question about the Reliability", height=120)
-    if st.button("Get Answer"):
-        if question.strip():
-            with st.spinner("Retrieving relevant sections and asking the model..."):
-                answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
-            if answer:
-                # Save to history
-                st.session_state.history.append({"q": question, "a": answer})
-                st.success(answer)
-            else:
-                st.error("No answer could be generated.")
-    if st.session_state.history:
-        st.subheader("Conversation History")
-        for i, item in enumerate(st.session_state.history, 1):
-            st.markdown(f"**Q{i}:** {item['q']}")
-            st.markdown(f"**A{i}:** {item['a']}")
-            st.markdown("---")
-        #if answer:
-        #    st.subheader("Answer")
-        #    st.write(answer)
+# -------------------------------
+# Q&A SECTION
+# -------------------------------
 
-            #st.subheader("Retrieved sections (debug)")
-            #for i, (txt, score) in enumerate(retrieved):
-            #    st.markdown(f"**Rank {i+1} — score {score:.4f}**")
-            #    st.text_area(f"Section {i+1}", value=txt, height=150)
+# Initialize history if not present
+if "history" not in st.session_state:
+    st.session_state.history = []
+
+st.subheader("Ask a Question")
+
+question = st.text_input("Enter your question about the documents:")
+
+def answer_question_with_context(question: str, vector_store, chunks, top_k: int = 3):
+    """Retrieve top_k chunks, build a prompt, and get a concise answer."""
+    try:
+        # Embed the question
+        q_emb = get_embeddings([question])[0]
+
+        # Retrieve top_k most relevant chunks
+        results = vector_store.query(q_emb, top_k=top_k)
+        retrieved_chunks = [chunks[idx] for idx, _ in results]
+        context = "\n\n".join(retrieved_chunks)
+
+        # Concise system prompt
+        system_prompt = (
+            "You are a helpful assistant. "
+            "Answer the user's question clearly and concisely (max 150 words). "
+            "Only use the provided context. "
+            "If the answer is not in the context, say 'I don't know'."
+        )
+
+        # Call OpenAI API
+        response = client.chat.completions.create(
+            model="gpt-4o-mini",  # or gpt-4o if available
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
+            ],
+            max_tokens=300,  # hard cap on answer length
+            temperature=0.3
+        )
+
+        return response.choices[0].message.content.strip()
+
+    except Exception as e:
+        st.error(f"Error while answering: {e}")
+        return None
+
+# Ask button
+if st.button("Get Answer"):
+    if question.strip():
+        answer = answer_question_with_context(question, st.session_state.vector_store, st.session_state.chunks)
+        if answer:
+            # Save to history
+            st.session_state.history.append({"q": question, "a": answer})
+            st.success(answer)
+        else:
+            st.warning("No answer could be generated. Try rephrasing your question.")
+    else:
+        st.warning("Please enter a question.")
+
+# Display history
+if st.session_state.history:
+    st.subheader("Conversation History")
+    for i, item in enumerate(st.session_state.history, 1):
+        st.markdown(f"**Q{i}:** {item['q']}")
+        st.markdown(f"**A{i}:** {item['a']}")
+        st.markdown("---")
+
+# Clear history button
+if st.button("Clear History"):
+    st.session_state.history = []
+    st.success("Conversation history cleared.")
+
 
 st.markdown("---")
 st.write("This is test program. Feedback is very much appreciated!")
