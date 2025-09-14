@@ -275,7 +275,7 @@ st.set_page_config(page_title="M&E Analysis", layout="wide")
 st.image("vna.png", width=200)
 st.title("M&E Analysis")
 st.markdown(
-    "click `Process folder, then ask questions about the documents."
+    "click `Process data, then ask questions about the documents."
 )
 
 folder_path = os.path.join(os.path.dirname(__file__), "data")
@@ -289,7 +289,7 @@ if 'vector_store' not in st.session_state:
     st.session_state.chunks = None
 
 # put this where your current Process folder logic is
-if st.button("Process folder"):
+if st.button("Process data"):
     if not os.path.isdir(folder_path):
         st.error("Invalid folder path")
     else:
