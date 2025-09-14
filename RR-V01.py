@@ -15,7 +15,7 @@ Environment:
 Set OPENAI_API_KEY environment variable before running.
 
 Run:
-streamlit run streamlit_pdf_qa.py
+streamlit run RR-V01.py
 
 """
 
