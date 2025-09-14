@@ -77,7 +77,7 @@ if st.session_state.authenticated:
     if st.sidebar.button("Logout"):
         st.session_state.authenticated = False
         st.session_state.username = ""
-        st.experimental_rerun()
+        st.rerun()
 
     def load_cache():
         if os.path.exists(CACHE_PATH):
