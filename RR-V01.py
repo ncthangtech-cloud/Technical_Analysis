@@ -376,10 +376,10 @@ if st.session_state.vector_store is not None:
             st.subheader("Answer")
             st.write(answer)
 
-            st.subheader("Retrieved sections (debug)")
-            for i, (txt, score) in enumerate(retrieved):
-                st.markdown(f"**Rank {i+1} — score {score:.4f}**")
-                st.text_area(f"Section {i+1}", value=txt, height=150)
+            #st.subheader("Retrieved sections (debug)")
+            #for i, (txt, score) in enumerate(retrieved):
+            #    st.markdown(f"**Rank {i+1} — score {score:.4f}**")
+            #    st.text_area(f"Section {i+1}", value=txt, height=150)
 
 st.markdown("---")
-st.write("Tips: set the OPENAI_API_KEY environment variable before running.")
+st.write("This is test program. Feedback is very much appreciated!")
