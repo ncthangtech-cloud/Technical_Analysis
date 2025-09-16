@@ -55,7 +55,8 @@ if "username" not in st.session_state:
 
 # Login form (only show if not logged in)
 if not st.session_state.authenticated:
-    st.subheader("🔐 Please log in to access the app")
+    st.image("vna.png", width=200)
+    st.subheader("🔐 Please log in to access the M&E App")
 
     with st.form("login_form"):
         username = st.text_input("Username")
@@ -282,7 +283,7 @@ if st.session_state.authenticated:
             # Concise system prompt
             system_prompt = (
                 "You are a helpful assistant. "
-                "Answer the user's question clearly and as concisely as possible (max 1000 words). "
+                "Answer the user's question clearly and as concisely as possible (max 1500 words). "
                 "Only use the provided context. "
                 "If the answer is not in the context, say 'I don't know, can you please write your question more specifically'."
             )
@@ -294,7 +295,7 @@ if st.session_state.authenticated:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
                 ],
-                max_tokens=200,  # hard cap on answer length
+                max_tokens=500,  # hard cap on answer length
                 temperature=0.3
             )
     
