@@ -285,7 +285,7 @@ if st.session_state.authenticated:
                 "You are a helpful assistant. "
                 "Answer the user's question clearly and as concisely as possible (max 1500 words). "
                 "Only use the provided context. "
-                "If the answer is not in the context, say 'I don't know, 4o-mini",  # or gpt-4o if available
+                "If the answer is not in the context, say 'I don't know, can you please write your question more specifically'."
             )
             # Call OpenAI API
             response = client.chat.completions.create(
