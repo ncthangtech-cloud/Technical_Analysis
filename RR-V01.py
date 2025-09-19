@@ -38,7 +38,7 @@ from datetime import datetime
 # Configuration
 # -----------------------------
 EMBEDDING_MODEL = "text-embedding-3-small"  # OpenAI embedding model
-CHAT_MODEL = "gpt-4o"  # change if you prefer another chat model
+CHAT_MODEL = "gpt-5-mini"  # change if you prefer another chat model
 # Initialize client
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
@@ -269,7 +269,7 @@ if st.session_state.authenticated:
     # Answer generation using retrieved context
     # -----------------------------
     
-    def answer_question_with_context(question: str, vector_store, chunks, top_k: int = 3):
+    def answer_question_with_context(question: str, vector_store, chunks, top_k: int = 10):
         """Retrieve top_k chunks, build a prompt, and get a concise answer."""
         try:
             # Embed the question
@@ -290,12 +290,12 @@ if st.session_state.authenticated:
     
             # Call OpenAI API
             response = client.chat.completions.create(
-                model="gpt-4o-mini",  # or gpt-4o if available
+                model="gpt-5-mini",  # or gpt-4o if available
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
                 ],
-                max_tokens=500,  # hard cap on answer length
+                max_tokens=1000,  # hard cap on answer length
                 temperature=0.3
             )
     
@@ -321,9 +321,9 @@ if st.session_state.authenticated:
     #chunk_size = st.sidebar.number_input("Chunk size (chars)", min_value=200, max_value=10000, value=5000, step=100)
     #chunk_overlap = st.sidebar.number_input("Chunk overlap (chars)", min_value=0, max_value=2000, value=500, step=50)
     #top_k = st.sidebar.slider("Top K retrieved chunks", min_value=1, max_value=10, value=4)
-    chunk_size = 5000
-    chunk_overlap = 500
-    top_k = 4
+    chunk_size = 1500
+    chunk_overlap = 200
+    top_k = 10
     
     if 'vector_store' not in st.session_state:
         st.session_state.vector_store = None
