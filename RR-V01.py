@@ -286,6 +286,10 @@ if st.session_state.authenticated:
                 "Answer the user's question clearly and as concisely as possible (max 1500 words). "
                 "Only use the provided context. "
                 "If the answer is not in the context, say 'I don't know, 4o-mini",  # or gpt-4o if available
+            )
+            # Call OpenAI API
+            response = client.chat.completions.create(
+                model="gpt-4o-mini",  # or gpt-4o if available
                 messages=[
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
