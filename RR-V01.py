@@ -291,8 +291,8 @@ if st.session_state.authenticated:
             response = client.chat.completions.create(
                 model="gpt-4o-mini",  # or gpt-4o if available
                 messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
+                    {"role": "system", "content": [{"type": "text", "text": system_prompt}]},
+                    {"role": "user", "content": [{"type": "text", "text": f"Question: {question}\n\nContext:\n{context}"}]}
                 ],
                 max_tokens=1000,  # hard cap on answer length
                 temperature=0.3
