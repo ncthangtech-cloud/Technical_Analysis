@@ -295,8 +295,8 @@ if st.session_state.authenticated:
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": f"Question: {question}\n\nContext:\n{context}"}
                 ],
-                max_tokens=1000,  # hard cap on answer length
-                temperature=0.3
+                max_completion_tokens=1000,  # hard cap on answer length
+                temperature=1
             )
     
             return response.choices[0].message.content.strip()
